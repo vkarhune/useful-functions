@@ -1,4 +1,22 @@
 
+### usage:
+if(0){
+prc <- proc.time()
+results <- apply(df, 1, function(x){
+ vec <- x[!is.na(x)]
+ beta <- vec[grep("BETA", names(vec))]
+ se <- vec[grep("SE", names(vec))]
+ n <- sum(vec[grepl("^N_", names(vec))], na.rm=T)
+
+ ma <- tryCatch({meta_analysis(beta = beta, se = se, hk=TRUE)}, error = function(error){return(NA)})
+ if(!(exists("ma"))) return(NULL)
+
+ return(c(unlist(ma), N=n, beta, se))
+
+})
+proc.time() - prc
+}
+
 meta_analysis <- function(beta, se, hk=FALSE){
 
 # FE
